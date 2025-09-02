@@ -7,11 +7,11 @@ logger = logging.getLogger("services.zipcode_service")
 ZIPCODEBASE_KEY = os.getenv("ZIPCODEBASE_KEY", "")
 ZIPCODEBASE_URL = "https://app.zipcodebase.com/api/v1/search"
 
-# Cache simples em memória (poderia ser LRU/Redis)
+# Simple in-memory cache (could be LRU/Redis)
 _ZIP_CACHE: Dict[str, Dict[str, Any]] = {}
-# "In-flight" para coalescer chamadas concorrentes do mesmo CEP
+# "In-flight" to coalesce concurrent calls from the same zip code
 _INFLIGHT: Dict[str, asyncio.Future] = {}
-# Limitar concorrência global das chamadas externas
+# Limit global competition for external calls
 _SEM = asyncio.Semaphore(int(os.getenv("ZIPCODEBASE_MAX_CONCURRENCY", "4")))
 
 def _norm_cep(cep: str) -> str:
@@ -21,7 +21,7 @@ def _norm_cep(cep: str) -> str:
     return d
 
 async def _via_cep(cep_digits: str) -> Dict[str, Any]:
-    """Fallback grátis BR (sem limites agressivos)."""
+    """Free BR fallback (no aggressive limits)."""
     url = f"https://viacep.com.br/ws/{cep_digits}/json/"
     try:
         async with httpx.AsyncClient(timeout=10) as client:
@@ -32,7 +32,7 @@ async def _via_cep(cep_digits: str) -> Dict[str, Any]:
             data = r.json()
             if data.get("erro"):
                 return {}
-            # Formata postal_code no padrão 00000-000
+            # Format postal_code in the pattern 00000-000
             pc = f"{cep_digits[:5]}-{cep_digits[5:]}" if len(cep_digits) == 8 else None
             return {
                 "thoroughfare": None,
@@ -49,7 +49,7 @@ async def _via_cep(cep_digits: str) -> Dict[str, Any]:
         return {}
 
 async def _zipcodebase_lookup(cep_digits: str, country: str) -> Dict[str, Any]:
-    """Consulta Zipcodebase com retry/backoff e respeito a Retry-After."""
+    """Zipcodebase query with retry/backoff and respect for Retry-After."""
     params = {"codes": cep_digits, "country": country, "apikey": ZIPCODEBASE_KEY}
     retries = 3
     base_delay = float(os.getenv("ZIPCODEBASE_BASE_DELAY", "1.0"))
@@ -69,7 +69,7 @@ async def _zipcodebase_lookup(cep_digits: str, country: str) -> Dict[str, Any]:
                             wait_s = base_delay * attempt
                     else:
                         wait_s = base_delay * attempt
-                    # Jitter leve para evitar sincronização
+                    # Slight jitter to avoid synchronization
                     wait_s += random.uniform(0, 0.5)
                     logger.warning(f"[Zipcodebase] 429 on {cep_digits}, attempt {attempt}/{retries}, sleeping {wait_s:.2f}s")
                     await asyncio.sleep(wait_s)
@@ -81,7 +81,7 @@ async def _zipcodebase_lookup(cep_digits: str, country: str) -> Dict[str, Any]:
                 if not results:
                     return {}
                 enriched = results[0]
-                # Monta saída mínima estável (Zipcodebase varia por plano)
+                # Assembles minimum stable output (Zipcodebase varies by plan)
                 return {
                     "thoroughfare": enriched.get("street") or None,
                     "house_number": None,
@@ -93,11 +93,11 @@ async def _zipcodebase_lookup(cep_digits: str, country: str) -> Dict[str, Any]:
                     "complement": None
                 }
             except httpx.HTTPStatusError as e:
-                # Para 4xx (exceto 429) não adianta muito retry
+                # For 4xx (except 429) there is not much point in retrying
                 if 400 <= e.response.status_code < 500 and e.response.status_code != 429:
                     logger.error(f"[Zipcodebase] {e.response.status_code} for {cep_digits}: {e.response.text[:200]}")
                     return {}
-                # Para 5xx tenta novamente
+                # For 5xx try again
                 wait_s = base_delay * attempt + random.uniform(0, 0.5)
                 logger.warning(f"[Zipcodebase] {e.response.status_code} retry {attempt}/{retries} in {wait_s:.2f}s")
                 await asyncio.sleep(wait_s)
@@ -111,7 +111,7 @@ async def _zipcodebase_lookup(cep_digits: str, country: str) -> Dict[str, Any]:
     return {}
 
 async def enrich_address_with_zipcode(record: Dict[str, Any]) -> Dict[str, Any]:
-    """Enriquece record['_parsed'] via Zipcodebase com cache, coalescência e fallback ViaCEP."""
+    """Enriches record['_parsed'] via Zipcodebase with ViaCEP caching, coalescing, and fallback."""
     cep_digits = _norm_cep(record.get("cep", ""))
     country = (record.get("country_code") or "BR").upper()
 
@@ -123,8 +123,8 @@ async def enrich_address_with_zipcode(record: Dict[str, Any]) -> Dict[str, Any]:
         record["_parsed"] = _ZIP_CACHE[cep_digits]
         return record
 
-    # 2) coalescer chamadas concorrentes do mesmo CEP
-    #    (quem chegar depois aguarda a futura resposta da primeira chamada)
+    # 2) coalesce concurrent calls from the same zip code
+    #    (whoever arrives later awaits the future response to the first call)
     fut = _INFLIGHT.get(cep_digits)
     if fut:
         try:
@@ -134,10 +134,10 @@ async def enrich_address_with_zipcode(record: Dict[str, Any]) -> Dict[str, Any]:
                 record["_parsed"] = parsed
             return record
         except Exception:
-            # Se a future falhou, vamos tentar nós mesmos
+            # If future failed, let's try ourselves
             pass
 
-    # 3) primeira thread: cria a future e executa consulta sob semáforo
+    # 3) first thread: creates the future and executes the query under semaphore
     loop = asyncio.get_running_loop()
     _INFLIGHT[cep_digits] = loop.create_future()
 
@@ -151,11 +151,11 @@ async def enrich_address_with_zipcode(record: Dict[str, Any]) -> Dict[str, Any]:
             if not parsed and country == "BR":
                 parsed = await _via_cep(cep_digits)
 
-            # Guarda no cache
+            # Store in cache
             if parsed:
                 _ZIP_CACHE[cep_digits] = parsed
 
-            # Resolve as esperas coalescidas
+            # Resolves coalesced waits
             if not _INFLIGHT[cep_digits].done():
                 _INFLIGHT[cep_digits].set_result(parsed)
 
@@ -168,5 +168,5 @@ async def enrich_address_with_zipcode(record: Dict[str, Any]) -> Dict[str, Any]:
             _INFLIGHT[cep_digits].set_result({})
         return record
     finally:
-        # Limpa a chave de in-flight (evita vazamento)
+        # Clean the in-flight switch (prevents leakage)
         _INFLIGHT.pop(cep_digits, None)
