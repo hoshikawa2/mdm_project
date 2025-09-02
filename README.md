@@ -107,26 +107,98 @@ conda activate mdm
 ```
 
 ### Step 2 — Configure Environment Variables
-Create a `.env` file:
-```bash
-REQUEST_TIMEOUT=300
-OLLAMA_ENDPOINTS="http://127.0.0.1:11434,http://127.0.0.1:11435"
-NUM_GPU=2000
-NUM_BATCH=512
-NUM_CTX=8192
-NUM_THREAD=512
-CONCURRENCY_NORMALIZE=16
-CONCURRENCY_ADDRESS=16
-ZIPCODEBASE_KEY=your_api_key_here
+
+# Ollama Multi-GPU Setup on OCI A10
+
+## Systemd Services
+
+**/etc/systemd/system/ollama-gpu0.service**
+
+``` bash
+[Unit]
+Description=Ollama on GPU0 (A10 #0)
+After=network.target
+
+[Service]
+User=opc
+Group=opc
+# <<< IMPORTANT: SAME MODEL FOLDER FOR BOTH >>>
+Environment=OLLAMA_MODELS=/home/opc/.ollama/models
+Environment=CUDA_VISIBLE_DEVICES=0
+# On the server do not use "http://"
+Environment=OLLAMA_HOST=127.0.0.1:11434
+Environment=OLLAMA_NUM_PARALLEL=4
+# Keeps the model loaded between calls
+Environment=OLLAMA_KEEP_ALIVE=5m
+# Useful verbose logs (INFO/DEBUG)
+Environment=OLLAMA_DEBUG=INFO
+ExecStart=/usr/local/bin/ollama serve
+Restart=always
+RestartSec=2s
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-### Step 3 — Launch Ollama GPU Servers
-```bash
-CUDA_VISIBLE_DEVICES=0 OLLAMA_HOST=127.0.0.1:11434 ollama serve
-CUDA_VISIBLE_DEVICES=1 OLLAMA_HOST=127.0.0.1:11435 ollama serve
+**/etc/systemd/system/ollama-gpu1.service**
+
+``` bash
+[Unit]
+Description=Ollama on GPU1 (A10 #1)
+After=network.target
+
+[Service]
+User=opc
+Group=opc
+# <<< SAME MODEL FOLDER AS GPU0 >>>
+Environment=OLLAMA_MODELS=/home/opc/.ollama/models
+Environment=CUDA_VISIBLE_DEVICES=1
+Environment=OLLAMA_HOST=127.0.0.1:11435
+Environment=OLLAMA_NUM_PARALLEL=4
+Environment=OLLAMA_KEEP_ALIVE=5m
+Environment=OLLAMA_DEBUG=INFO
+ExecStart=/usr/local/bin/ollama serve
+Restart=always
+RestartSec=2s
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-### Step 4 — Run FastAPI Application
+## Ollama Activation
+
+``` bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now ollama-gpu0 ollama-gpu1
+journalctl -u ollama-gpu0 -f &
+journalctl -u ollama-gpu1 -f &
+```
+
+## CUDA Configuration Variables
+
+``` sh
+# 2 endpoints for 2 GPUs
+export OLLAMA_ENDPOINTS="http://127.0.0.1:11434,http://127.0.0.1:11435"
+
+# Model-side settings (per server)
+export NUM_CTX=8192
+export NUM_BATCH=1024      # later try 1280→1536→2048 if you have VRAM
+export NUM_GPU=999         # “all layers on GPU”
+export NUM_THREAD=48       # ~ useful vCPUs, not 600
+
+# App concurrency
+export CONCURRENCY_NORMALIZE=24
+export CONCURRENCY_ADDRESS=24
+
+# Timeouts/logs
+export REQUEST_TIMEOUT=180
+export LOG_LEVEL=INFO
+```
+
+
+### Step 3 — Run FastAPI Application
 ```bash
 uvicorn mdm_app.app:app --host 0.0.0.0 --port 8080 --workers 4
 ```
@@ -164,3 +236,12 @@ curl -X POST http://localhost:8080/mdm/process   -H "Content-Type: application/j
 ---
 
 ✅ At this point, the project should be fully deployed, running on **OCI A10 GPUs**, and producing clean, standardized, and enriched master data records.  
+
+## Reference
+
+- [Oracle Cloud GPU Instances](https://www.oracle.com/cloud/compute/gpu/)
+- [Using NVidia GPU with Oracle Cloud Infrastructure](https://docs.oracle.com/pt-br/iaas/Content/Compute/References/ngcimage.htm)
+
+## Acknowledgments
+
+- **Author** - Cristiano Hoshikawa (Oracle LAD A-Team Solution Engineer)
