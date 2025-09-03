@@ -1,8 +1,8 @@
 import httpx, json, itertools, logging, time, asyncio
 from pathlib import Path
-from config import settings
+from files.config import settings
 from .common import safe_json_from_text
-from services.zipcode_service import enrich_address_with_zipcode
+from files.services.zipcode_service import enrich_address_with_zipcode
 
 logger = logging.getLogger("mdm.services")
 _rr = itertools.count()

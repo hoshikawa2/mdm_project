@@ -149,6 +149,8 @@ flowchart TD
 
 ## 5. Deploy the Application
 
+You can download the source-code here: [mdm_project.zip](./files/mdm_project.zip) 
+
 ### Ollama on OCI A10 — Two-GPU Installation & Configuration (Step-by-Step)
 
 This section explains how to install **Ollama** on an Oracle Linux VM with **two NVIDIA A10 GPUs**, run **one Ollama service per GPU** via `systemd`, pull and tune the **Qwen 2.5 7B** model, and configure your app (`config.py` and `run.sh`) to use both endpoints concurrently.

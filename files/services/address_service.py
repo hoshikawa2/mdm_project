@@ -1,6 +1,6 @@
 import httpx, json, itertools, logging, time, asyncio, re
 from pathlib import Path
-from config import settings
+from files.config import settings
 from .common import safe_json_from_text
 
 logger = logging.getLogger("mdm.services")
