@@ -146,6 +146,27 @@ flowchart TD
 - **ZipCodeBase Enrichment**: Complements address data with official postal information.  
 - **Golden Record Consolidation**: Produces a unified, conflict-free record.  
 
+### Customizations
+
+The project contains these entities:
+
+- Customer
+- Address
+
+You can customize more entities if you wish. You need to change some points in the application:
+
+#### app.py
+
+Change, include or exclude the attributes that can influence on match and decide how to cosolidate and choose the golden record.
+
+![img.png](images/img.png)
+
+#### schemas.py
+
+You have domains, operations and payloads for Input and Output. You can customize to change or include more features.
+
+![img_1.png](images/img_1.png)
+
 ---
 
 ## 5. Deploy the Application
