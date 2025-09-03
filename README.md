@@ -6,10 +6,11 @@
 Modern organizations face enormous challenges in managing and maintaining the quality of their data. As businesses grow, data becomes fragmented across multiple systems such as ERPs, CRMs, e-commerce platforms, supplier management systems, and financial applications. This fragmentation creates duplicated records, inconsistent formats, incomplete information, and difficulty in ensuring compliance with regulations such as GDPR or LGPD.
 
 Master Data Management (MDM) is the discipline designed to address these challenges. MDM provides a structured way to:
-•	Unify and normalize customer, product, supplier, and financial data across multiple sources.
-•	Eliminate duplicates and identify the “golden record” that represents the single source of truth.
-•	Validate and harmonize business rules, codes, and formats to ensure data is consistent and reliable.
-•	Enable integration across business units, ensuring that every system consumes the same trusted master data.
+
+- 	Unify and normalize customer, product, supplier, and financial data across multiple sources.
+- 	Eliminate duplicates and identify the “golden record” that represents the single source of truth.
+- 	Validate and harmonize business rules, codes, and formats to ensure data is consistent and reliable.
+- 	Enable integration across business units, ensuring that every system consumes the same trusted master data.
 
 In daily operations, MDM simplifies tasks such as ensuring invoices match customer records, avoiding shipment errors caused by incorrect addresses, and accelerating onboarding of new suppliers or customers by relying on pre-validated, harmonized data.
 
@@ -18,11 +19,11 @@ In daily operations, MDM simplifies tasks such as ensuring invoices match custom
 ### AI-Driven MDM with Large Language Models
 
 Traditionally, implementing MDM required complex business rules, hardcoded validations, and long configuration cycles. Today, AI and Large Language Models (LLMs) introduce a modern approach that simplifies and accelerates these processes. With LLMs, it is possible to:
-•	Understand unstructured inputs such as free-text addresses, descriptions, or inconsistent product names.
-•	Automatically normalize formats (e.g., postal codes, phone numbers, CPF/CNPJ) without needing thousands of rules.
-•	Enrich missing data by combining internal records with external APIs (postal lookup, product codification, etc.).
-•	Accelerate configuration by reducing manual work in defining and tuning deduplication rules.
-•	Provide explainability and adaptability, since AI-driven prompts can be adapted quickly to new countries, business domains, or regulations.
+-	Understand unstructured inputs such as free-text addresses, descriptions, or inconsistent product names.
+-	Automatically normalize formats (e.g., postal codes, phone numbers, CPF/CNPJ) without needing thousands of rules.
+-	Enrich missing data by combining internal records with external APIs (postal lookup, product codification, etc.).
+-	Accelerate configuration by reducing manual work in defining and tuning deduplication rules.
+-	Provide explainability and adaptability, since AI-driven prompts can be adapted quickly to new countries, business domains, or regulations.
 
 This AI-enhanced MDM approach transforms what was once a rigid and slow data management process into a flexible, intelligent, and scalable solution.
 
@@ -31,21 +32,21 @@ This AI-enhanced MDM approach transforms what was once a rigid and slow data man
 ### Technologies
 
 This tutorial demonstrates how to implement an AI-powered MDM system using:
-•	Python (FastAPI + AsyncIO): for building modular and distributed services.
-•	Ollama with CUDA GPUs: to run open-source LLMs locally with high performance, leveraging NVidia GPU acceleration.
-•	Oracle Cloud Infrastructure (OCI): providing powerful and cost-effective GPU instances, such as A10 GPU shapes, ideal for AI workloads.
-•	ZipcodeBase API (external enrichment): for address validation and enrichment.
-•	MDM Services (Normalize, Validate, Deduplicate, Address Parse): modularized into microservices for performance and scalability.
+-	Python (FastAPI + AsyncIO): for building modular and distributed services.
+-	Ollama with CUDA GPUs: to run open-source LLMs locally with high performance, leveraging NVidia GPU acceleration.
+-	Oracle Cloud Infrastructure (OCI): providing powerful and cost-effective GPU instances, such as A10 GPU shapes, ideal for AI workloads.
+-	ZipcodeBase API (external enrichment): for address validation and enrichment.
+-	MDM Services (Normalize, Validate, Deduplicate, Address Parse): modularized into microservices for performance and scalability.
 
 ⸻
 
 ### Why Oracle Cloud Infrastructure GPUs?
 
 OCI offers GPU shapes specifically designed for AI and data science workloads. The A10 GPU instances provide the right balance of power and cost for running models like LLaMA or Qwen efficiently. Benefits include:
-•	Scalability: deploy as many GPUs as needed for your workload.
-•	Performance: optimized for CUDA workloads, ensuring high throughput for LLM inference.
-•	Cost efficiency: pay only for the capacity you use, scaling dynamically as projects grow.
-•	Enterprise integration: seamless connectivity with Oracle Autonomous Database, Object Storage, API Gateway, and other OCI services.
+-	Scalability: deploy as many GPUs as needed for your workload.
+-	Performance: optimized for CUDA workloads, ensuring high throughput for LLM inference.
+-	Cost efficiency: pay only for the capacity you use, scaling dynamically as projects grow.
+-	Enterprise integration: seamless connectivity with Oracle Autonomous Database, Object Storage, API Gateway, and other OCI services.
 
 By combining MDM best practices with AI-driven automation and OCI’s GPU infrastructure, organizations can dramatically reduce the time, cost, and complexity of deploying a robust Master Data Management solution.
 
