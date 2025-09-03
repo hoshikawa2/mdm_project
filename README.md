@@ -3,6 +3,54 @@
 
 ## 1. Introduction
 
+Modern organizations face enormous challenges in managing and maintaining the quality of their data. As businesses grow, data becomes fragmented across multiple systems such as ERPs, CRMs, e-commerce platforms, supplier management systems, and financial applications. This fragmentation creates duplicated records, inconsistent formats, incomplete information, and difficulty in ensuring compliance with regulations such as GDPR or LGPD.
+
+Master Data Management (MDM) is the discipline designed to address these challenges. MDM provides a structured way to:
+•	Unify and normalize customer, product, supplier, and financial data across multiple sources.
+•	Eliminate duplicates and identify the “golden record” that represents the single source of truth.
+•	Validate and harmonize business rules, codes, and formats to ensure data is consistent and reliable.
+•	Enable integration across business units, ensuring that every system consumes the same trusted master data.
+
+In daily operations, MDM simplifies tasks such as ensuring invoices match customer records, avoiding shipment errors caused by incorrect addresses, and accelerating onboarding of new suppliers or customers by relying on pre-validated, harmonized data.
+
+⸻
+
+### AI-Driven MDM with Large Language Models
+
+Traditionally, implementing MDM required complex business rules, hardcoded validations, and long configuration cycles. Today, AI and Large Language Models (LLMs) introduce a modern approach that simplifies and accelerates these processes. With LLMs, it is possible to:
+•	Understand unstructured inputs such as free-text addresses, descriptions, or inconsistent product names.
+•	Automatically normalize formats (e.g., postal codes, phone numbers, CPF/CNPJ) without needing thousands of rules.
+•	Enrich missing data by combining internal records with external APIs (postal lookup, product codification, etc.).
+•	Accelerate configuration by reducing manual work in defining and tuning deduplication rules.
+•	Provide explainability and adaptability, since AI-driven prompts can be adapted quickly to new countries, business domains, or regulations.
+
+This AI-enhanced MDM approach transforms what was once a rigid and slow data management process into a flexible, intelligent, and scalable solution.
+
+⸻
+
+### Technologies
+
+This tutorial demonstrates how to implement an AI-powered MDM system using:
+•	Python (FastAPI + AsyncIO): for building modular and distributed services.
+•	Ollama with CUDA GPUs: to run open-source LLMs locally with high performance, leveraging NVidia GPU acceleration.
+•	Oracle Cloud Infrastructure (OCI): providing powerful and cost-effective GPU instances, such as A10 GPU shapes, ideal for AI workloads.
+•	ZipcodeBase API (external enrichment): for address validation and enrichment.
+•	MDM Services (Normalize, Validate, Deduplicate, Address Parse): modularized into microservices for performance and scalability.
+
+⸻
+
+### Why Oracle Cloud Infrastructure GPUs?
+
+OCI offers GPU shapes specifically designed for AI and data science workloads. The A10 GPU instances provide the right balance of power and cost for running models like LLaMA or Qwen efficiently. Benefits include:
+•	Scalability: deploy as many GPUs as needed for your workload.
+•	Performance: optimized for CUDA workloads, ensuring high throughput for LLM inference.
+•	Cost efficiency: pay only for the capacity you use, scaling dynamically as projects grow.
+•	Enterprise integration: seamless connectivity with Oracle Autonomous Database, Object Storage, API Gateway, and other OCI services.
+
+By combining MDM best practices with AI-driven automation and OCI’s GPU infrastructure, organizations can dramatically reduce the time, cost, and complexity of deploying a robust Master Data Management solution.
+
+## 2. Objectives
+
 This project implements a **Master Data Management (MDM) pipeline** powered by **AI agents** and **GPU acceleration**.  
 Its purpose is to **normalize, validate, deduplicate, harmonize, and enrich master records** across multiple domains, such as:
 
@@ -26,7 +74,7 @@ The system leverages **CUDA acceleration** to maximize throughput and process la
 
 ---
 
-## 2. Prerequisites
+## 3. Prerequisites
 
 ### Hardware
 - **GPU**: NVIDIA A10 or higher (OCI `VM.GPU.A10.1` or `BM.GPU.A10.4`).  
@@ -56,13 +104,15 @@ The system leverages **CUDA acceleration** to maximize throughput and process la
 - `regex`  
 - `numpy`  
 
+>**Note:** Don't worry about the Python packages. The application starter will install the packages in the first execution.
+
 ### External Services
-- **ZipCodeBase API key** for address enrichment.  
+- **ZipCodeBase API key** for address enrichment. The project will use this API Service free. You need to sign for the free account and get a Token Access.
 - Access to **OCI tenancy** with GPU compute shapes enabled.  
 
 ---
 
-## 3. Understand the Architecture
+## 4. Understand the Architecture
 
 The project follows a **modular architecture** with clear separation of responsibilities.  
 
@@ -97,24 +147,29 @@ flowchart TD
 
 ---
 
-## 4. Deploy the Application
+## 5. Deploy the Application
 
-### Step 1 — Prepare Environment
+### Ollama on OCI A10 — Two-GPU Installation & Configuration (Step-by-Step)
+
+This section explains how to install **Ollama** on an Oracle Linux VM with **two NVIDIA A10 GPUs**, run **one Ollama service per GPU** via `systemd`, pull and tune the **Qwen 2.5 7B** model, and configure your app (`config.py` and `run.sh`) to use both endpoints concurrently.
+
+### Preconditions
+- OCI VM with 2× NVIDIA A10 GPUs, NVIDIA drivers/CUDA installed (`nvidia-smi` works).
+- Sudo access (e.g., user `opc`).
+
+### Install Ollama
+
 ```bash
-git clone https://github.com/your-org/mdm-server.git
-cd mdm-server
-conda activate mdm
+sudo dnf install -y curl
+curl -fsSL https://ollama.com/install.sh | sh
+# Disable default single service (we'll use two custom units)
+sudo systemctl disable --now ollama || true
+mkdir -p /home/opc/.ollama/models && sudo chown -R opc:opc /home/opc/.ollama
 ```
 
-### Step 2 — Configure Environment Variables
-
-# Ollama Multi-GPU Setup on OCI A10
-
-## Systemd Services
-
-**/etc/systemd/system/ollama-gpu0.service**
-
-``` bash
+### Create systemd services (one per GPU)
+Create `/etc/systemd/system/ollama-gpu0.service`:
+```ini
 [Unit]
 Description=Ollama on GPU0 (A10 #0)
 After=network.target
@@ -122,15 +177,11 @@ After=network.target
 [Service]
 User=opc
 Group=opc
-# <<< IMPORTANT: SAME MODEL FOLDER FOR BOTH >>>
 Environment=OLLAMA_MODELS=/home/opc/.ollama/models
 Environment=CUDA_VISIBLE_DEVICES=0
-# On the server do not use "http://"
 Environment=OLLAMA_HOST=127.0.0.1:11434
 Environment=OLLAMA_NUM_PARALLEL=4
-# Keeps the model loaded between calls
 Environment=OLLAMA_KEEP_ALIVE=5m
-# Useful verbose logs (INFO/DEBUG)
 Environment=OLLAMA_DEBUG=INFO
 ExecStart=/usr/local/bin/ollama serve
 Restart=always
@@ -141,9 +192,8 @@ LimitNOFILE=65535
 WantedBy=multi-user.target
 ```
 
-**/etc/systemd/system/ollama-gpu1.service**
-
-``` bash
+Create `/etc/systemd/system/ollama-gpu1.service`:
+```ini
 [Unit]
 Description=Ollama on GPU1 (A10 #1)
 After=network.target
@@ -151,7 +201,6 @@ After=network.target
 [Service]
 User=opc
 Group=opc
-# <<< SAME MODEL FOLDER AS GPU0 >>>
 Environment=OLLAMA_MODELS=/home/opc/.ollama/models
 Environment=CUDA_VISIBLE_DEVICES=1
 Environment=OLLAMA_HOST=127.0.0.1:11435
@@ -167,45 +216,47 @@ LimitNOFILE=65535
 WantedBy=multi-user.target
 ```
 
-## Ollama Activation
-
-``` bash
+Enable & tail logs:
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now ollama-gpu0 ollama-gpu1
 journalctl -u ollama-gpu0 -f &
 journalctl -u ollama-gpu1 -f &
 ```
 
-## CUDA Configuration Variables
-
-``` sh
-# 2 endpoints for 2 GPUs
-export OLLAMA_ENDPOINTS="http://127.0.0.1:11434,http://127.0.0.1:11435"
-
-# Model-side settings (per server)
-export NUM_CTX=8192
-export NUM_BATCH=1024      # later try 1280→1536→2048 if you have VRAM
-export NUM_GPU=999         # “all layers on GPU”
-export NUM_THREAD=48       # ~ useful vCPUs, not 600
-
-# App concurrency
-export CONCURRENCY_NORMALIZE=24
-export CONCURRENCY_ADDRESS=24
-
-# Timeouts/logs
-export REQUEST_TIMEOUT=180
-export LOG_LEVEL=INFO
-```
-
-
-### Step 3 — Run FastAPI Application
+### Pull Qwen model
 ```bash
-uvicorn mdm_app.app:app --host 0.0.0.0 --port 8080 --workers 4
+ollama pull qwen2.5:7b
 ```
+
+### Configure your app (files included in this zip)
+- `config.py` — endpoints, options, round-robin helper.
+- `run.sh` — waits for endpoints, warms model, starts FastAPI app.
+
+Make script executable:
+```bash
+chmod +x run.sh
+```
+
+### Quick test
+```bash
+# Check both endpoints
+curl -s http://127.0.0.1:11434/api/tags | head
+curl -s http://127.0.0.1:11435/api/tags | head
+
+# Warmup via run.sh
+./run.sh &
+```
+
+### Troubleshooting
+- 404 on 11435 → confirm service is running and `OLLAMA_HOST` has no http:// prefix.
+- One GPU idle → ensure app uses both endpoints (see `config.py`).
+- OOM/slow → reduce `NUM_BATCH` or `NUM_CTX` and retry.
+
 
 ---
 
-## 5. Test
+## 6. Test
 
 ### Send a Test Request
 ```bash
@@ -241,6 +292,7 @@ curl -X POST http://localhost:8080/mdm/process   -H "Content-Type: application/j
 
 - [Oracle Cloud GPU Instances](https://www.oracle.com/cloud/compute/gpu/)
 - [Using NVidia GPU with Oracle Cloud Infrastructure](https://docs.oracle.com/pt-br/iaas/Content/Compute/References/ngcimage.htm)
+- [The Future of Middleware in the Age of Artificial Intelligence - Original article in Portuguese](https://www.linkedin.com/pulse/o-futuro-do-middleware-na-era-da-intelig%C3%AAncia-ivan-gardino-mba-to9uf/)
 
 ## Acknowledgments
 
