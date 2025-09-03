@@ -1527,6 +1527,28 @@ curl -X POST http://localhost:8080/mdm/process   -H "Content-Type: application/j
 
 ✅ At this point, the project should be fully deployed, running on **OCI A10 GPUs**, and producing clean, standardized, and enriched master data records.  
 
+
+## Conclusion
+
+This project is divided into two complementary layers that, together, provide a modern and powerful approach to Master Data Management (MDM).
+
+### Layer 1: Python Service Layer
+-	This layer supports services that require high accuracy and well-defined rules.
+-	It is composed of configurable components such as schemas, external services (e.g., ZipcodeBase for address enrichment), and processing operations (normalization, deduplication, harmonization, masking, etc.).
+-	The Python code ensures that the system can be customized and extended according to the company’s specific business rules and integration requirements.
+### Layer 2: LLM Prompt Layer
+-	This layer leverages Large Language Models (LLMs) to enhance flexibility in rule execution and validation.
+-	Instead of hardcoding every detail, many aspects of the logic can be configured directly in the prompt, allowing business and data teams to rapidly adapt the rules and improve data quality without heavy development cycles.
+-	This significantly simplifies daily operations, making MDM more accessible to non-technical users while still supporting advanced AI-powered data enrichment.
+
+### Comparing with Traditional MDM Solutions
+-	Legacy MDM systems are often rigid, requiring specialized development for every change in rule or logic. They are powerful but typically involve long implementation cycles, complex ETL pipelines, and high maintenance costs.
+-	This project, however, combines deterministic Python services with adaptive AI-driven prompts, delivering the best of both worlds:
+-	The Python layer guarantees stability, compliance, and deterministic accuracy.
+-	The LLM layer introduces agility and intelligence, reducing friction in configuration and accelerating response to business changes.
+
+This hybrid approach represents a modern evolution of MDM, where AI amplifies human capability, enabling faster integration, higher data quality, and easier maintenance in dynamic business environments.
+
 ## Reference
 
 - [Oracle Cloud GPU Instances](https://www.oracle.com/cloud/compute/gpu/)
