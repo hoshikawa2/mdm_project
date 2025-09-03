@@ -264,20 +264,231 @@ curl -s http://127.0.0.1:11435/api/tags | head
 ### Send a Test Request
 ```bash
 curl -X POST http://localhost:8080/mdm/process   -H "Content-Type: application/json"   -d '{
-        "domain": "customer",
-        "operations": ["normalize", "validate", "dedupe", "consolidate"],
-        "records": [
-          {
-            "source": "CRM",
-            "id": "cust-1001",
-            "name": "Ana Paula",
-            "cpf": "98765432100",
-            "phone": "21988887777",
-            "cep": "22041001",
-            "address": "Rua Figueiredo Magalhaes, 123"
-          }
-        ]
-      }'
+  "domain": "customer",
+  "operations": ["normalize", "validate", "mask", "consolidate", "dedupe"],
+  "policies": { "golden_record_priority": true },
+  "records": [
+    {
+      "source": "APP",
+      "id": "u-778",
+      "name": "ana paula",
+      "cpf": "98765432100",
+      "email": "ana.paula+teste@dominio.com",
+      "phone": "(21) 988887777",
+      "cep": "22041001",
+      "address": "Rua Figueiredo Magalhães, 123",
+      "country_code": "BR"
+    },
+    {
+      "source": "APP",
+      "id": "u778",
+      "name": "ana paula Silva",
+      "cpf": "98765432100",
+      "email": "ana.paula.teste@dominio.com",
+      "phone": "(21) 98888-7777",
+      "cep": "22041001",
+      "address": "Rua Figueiredo Magalhães, 123 - Bairro Cristal",
+      "country_code": "BR"
+    },
+    {
+      "source": "CRM",
+      "id": "cust-1001",
+      "name": "Ana P. Silva",
+      "cpf": "98765432100",
+      "email": "anapaula@dominio.com",
+      "phone": "21988887777",
+      "cep": "22041-001",
+      "address": "R. Figueiredo Magalhaes, 123",
+      "locality": "Rio de Janeiro",
+      "admin_area": "Rio de Janeiro",
+      "country_code": "BR"
+    },
+    {
+      "source": "ERP",
+      "id": "C-778",
+      "name": "Ana Paula da Silva",
+      "cpf": "987.654.321-00",
+      "email": "ana.silva@dominio.com",
+      "phone": "021988887777",
+      "cep": "22041-001",
+      "address": "Rua Figueiredo Magalhães 123 Copacabana",
+      "country_code": "BR"
+    },
+    {
+      "source": "POS",
+      "id": "pos778",
+      "name": "Ana Paula S.",
+      "cpf": "98765432100",
+      "email": "ana.p@dominio.com",
+      "phone": "98888-7777",
+      "cep": "22041-001",
+      "address": "Rua Figueiredo Magalhães, nº123",
+      "country_code": "BR"
+    },
+    {
+      "source": "WEB",
+      "id": "user778",
+      "name": "Ana Paula",
+      "cpf": "98765432100",
+      "email": "ana.paula.silva@dominio.com",
+      "phone": "+55 (21) 98888-7777",
+      "cep": "22041001",
+      "address": "Av. Figueiredo Magalhães, 123",
+      "country_code": "BR"
+    },
+    {
+      "source": "LOYALTY",
+      "id": "L778",
+      "name": "Paula, Ana",
+      "cpf": "98765432100",
+      "email": "ana.paula@dominio.com",
+      "phone": "21 98888 7777",
+      "cep": "22041-001",
+      "address": "Rua Figueiredo Magalhães, 123 Ap 301",
+      "locality": "Rio de Janeiro",
+      "admin_area": "Rio de Janeiro",
+      "country_code": "BR"
+    },
+    {
+      "source": "MARKETING",
+      "id": "mk-778",
+      "name": "ANA PAULA",
+      "cpf": "98765432100",
+      "email": "ana.paulasilva@dominio.com",
+      "phone": "21988887777",
+      "cep": "22041001",
+      "address": "R Figueiredo Magalhaes 123",
+      "country_code": "BR"
+    },
+    {
+      "source": "SUPPORT",
+      "id": "sup-778",
+      "name": "A. P. Silva",
+      "cpf": "98765432100",
+      "email": "a.silva@dominio.com",
+      "phone": "98888 7777",
+      "cep": "22041-001",
+      "address": "Rua Figueiredo Magalhães, nº 123",
+      "country_code": "BR"
+    },
+    {
+      "source": "APP",
+      "id": "u-779",
+      "name": "Ana Paula S",
+      "cpf": "98765432100",
+      "email": "ana.silva+promo@dominio.com",
+      "phone": "(21)98888-7777",
+      "cep": "22041001",
+      "address": "Rua Figueiredo Magalhães,123",
+      "country_code": "BR"
+    },
+    {
+      "source": "ERP",
+      "id": "C-778b",
+      "name": "Ana P Silva",
+      "cpf": "98765432100",
+      "email": "ana.silva_test@dominio.com",
+      "phone": "988887777",
+      "cep": "22041-001",
+      "address": "R Figueiredo Magalhães 123 Bloco A",
+      "country_code": "BR"
+    },
+    {
+      "source": "WEB",
+      "id": "web778",
+      "name": "Ana Paula",
+      "cpf": "98765432100",
+      "email": "anap@dominio.com",
+      "phone": "55 21 98888-7777",
+      "cep": "22041001",
+      "address": "Rua Figueiredo Magalhaes 123",
+      "locality": "Rio de Janeiro",
+      "admin_area": "Rio de Janeiro",
+      "country_code": "BR"
+    },
+    {
+      "source": "CRM",
+      "id": "cust-1002",
+      "name": "Ana Paula S",
+      "cpf": "98765432100",
+      "email": "ana.silva.crm@dominio.com",
+      "phone": "2198888-7777",
+      "cep": "22041-001",
+      "address": "R Figueiredo Magalhães, 123, Copacabana",
+      "country_code": "BR"
+    },
+    {
+      "source": "POS",
+      "id": "pos-779",
+      "name": "Ana P",
+      "cpf": "98765432100",
+      "email": "ap.silva@dominio.com",
+      "phone": "98888-7777",
+      "cep": "22041-001",
+      "address": "Rua Figueiredo Magalhães 123",
+      "locality": "Rio de Janeiro",
+      "admin_area": "Rio de Janeiro",
+      "country_code": "BR"
+    },
+    {
+      "source": "LOYALTY",
+      "id": "L779",
+      "name": "Ana Paula",
+      "cpf": "98765432100",
+      "email": "ana.paula_loyalty@dominio.com",
+      "phone": "(21)98888-7777",
+      "cep": "22041001",
+      "address": "Rua Figueiredo Magalhães, 123, ap 502",
+      "country_code": "BR"
+    },
+    {
+      "source": "MARKETING",
+      "id": "mk-779",
+      "name": "Ana Paula",
+      "cpf": "98765432100",
+      "email": "ana.silva+marketing@dominio.com",
+      "phone": "21988887777",
+      "cep": "22041-001",
+      "address": "R. Figueiredo Magalhães, 123",
+      "country_code": "BR"
+    },
+    {
+      "source": "SUPPORT",
+      "id": "sup-779",
+      "name": "Ana Silva",
+      "cpf": "98765432100",
+      "email": "ana.suporte@dominio.com",
+      "phone": "+55 21 98888-7777",
+      "cep": "22041001",
+      "address": "Rua Figueiredo Magalhães,123",
+      "locality": "Rio de Janeiro",
+      "admin_area": "Rio de Janeiro",
+      "country_code": "BR"
+    },
+    {
+      "source": "ERP",
+      "id": "C-780",
+      "name": "Ana P da Silva",
+      "cpf": "98765432100",
+      "email": "ana.official@dominio.com",
+      "phone": "021988887777",
+      "cep": "22041-001",
+      "address": "Rua Figueiredo Magalhães, 123 - Copacabana",
+      "country_code": "BR"
+    },
+    {
+      "source": "WEB",
+      "id": "user-780",
+      "name": "Ana Paula",
+      "cpf": "98765432100",
+      "email": "ana.paula.web@dominio.com",
+      "phone": "(21)988887777",
+      "cep": "22041001",
+      "address": "R Figueiredo Magalhães, 123",
+      "country_code": "BR"
+    }
+  ]
+}'
 ```
 
 ### Expected Output
@@ -286,6 +497,1031 @@ curl -X POST http://localhost:8080/mdm/process   -H "Content-Type: application/j
 - **CEP** formatted as `22041-001`.  
 - **Address enriched** with neighborhood `Copacabana`, city `Rio de Janeiro`, state `RJ`.  
 - **Golden record** returned with deduplication applied.  
+
+```json
+{
+    "record_clean": [
+        {
+            "source": "APP",
+            "id": "u-778",
+            "name": "Ana Paula",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.paula+teste@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães, 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "APP",
+            "id": "u778",
+            "name": "Ana Paula Silva",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.paula.teste@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães, 123 - Bairro Cristal",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Cristal",
+                "city": "Rio de Janeiro",
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "CRM",
+            "id": "cust-1001",
+            "name": "Ana P. Silva",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "anapaula@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "R. Figueiredo Magalhaes, 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "ERP",
+            "id": "C-778",
+            "name": "Ana Paula da Silva",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.silva@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães 123 Copacabana",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": null,
+            "id": null,
+            "name": "Ana Paula S.",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.p@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": null,
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": null,
+                "house_number": null,
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": null,
+            "id": null,
+            "name": "Ana Paula",
+            "cpf": "98765432100",
+            "cnpj": null,
+            "email": "ana.paula.silva@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Av. Figueiredo Magalhães, 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Avenida Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "LOYALTY",
+            "id": "L778",
+            "name": "Paula, Ana",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.paula@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães, 123 Ap 301",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": "Ap 301"
+            }
+        },
+        {
+            "source": "MARKETING",
+            "id": "mk-778",
+            "name": "Ana Paula",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.paulasilva@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "R Figueiredo Magalhaes 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "SUPPORT",
+            "id": "sup-778",
+            "name": "A. P. Silva",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "a.silva@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães, nº 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "APP",
+            "id": "u-779",
+            "name": "Ana Paula S",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.silva+promo@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães, 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "ERP",
+            "id": "C-778b",
+            "name": "Ana P. Silva",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.silva_test@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "R Figueiredo Magalhães 123 Bloco A",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "null",
+                "city": "Rio de Janeiro",
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": "Bloco A"
+            }
+        },
+        {
+            "source": null,
+            "id": null,
+            "name": "Ana Paula",
+            "cpf": "98765432100",
+            "cnpj": null,
+            "email": "anap@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "CRM",
+            "id": "cust-1002",
+            "name": "Ana Paula S",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.silva.crm@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "R Figueiredo Magalhães, 123, Copacabana",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": null,
+            "id": null,
+            "name": "Ana P",
+            "cpf": "98765432100",
+            "cnpj": null,
+            "email": "ap.silva@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "LOYALTY",
+            "id": "L779",
+            "name": "Ana Paula",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.paula_loyalty@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães, 123, ap 502",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": "ap 502"
+            }
+        },
+        {
+            "source": "MARKETING",
+            "id": "mk-779",
+            "name": "Ana Paula",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.silva+marketing@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "R. Figueiredo Magalhães, 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "SUPPORT",
+            "id": "sup-779",
+            "name": "Ana Silva",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.suporte@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães, 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": "ERP",
+            "id": "C-780",
+            "name": "Ana P da Silva",
+            "cpf": "98765432100",
+            "cnpj": null,
+            "email": "ana.official@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "Rua Figueiredo Magalhães, 123 - Copacabana",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        },
+        {
+            "source": null,
+            "id": null,
+            "name": "Ana Paula",
+            "cpf": "987.654.321-00",
+            "cnpj": null,
+            "email": "ana.paula.web@dominio.com",
+            "phone": "+5521988887777",
+            "cep": "22041-001",
+            "address": "R Figueiredo Magalhães, 123",
+            "birth_date": null,
+            "city": "Copacabana",
+            "state": "RJ",
+            "country_code": "BR",
+            "_parsed": {
+                "thoroughfare": "Rua Figueiredo Magalhães",
+                "house_number": "123",
+                "neighborhood": "Copacabana",
+                "city": null,
+                "state": "RJ",
+                "postal_code": "22041-001",
+                "country_code": "BR",
+                "complement": null
+            }
+        }
+    ],
+    "golden_record": {
+        "source": "CRM",
+        "id": "cust-1001",
+        "name": "Ana P. Silva",
+        "cpf": "987.654.321-00",
+        "cnpj": null,
+        "email": "anapaula@dominio.com",
+        "phone": "+5521988887777",
+        "cep": "22041-001",
+        "address": "R. Figueiredo Magalhaes, 123",
+        "birth_date": null,
+        "city": "Copacabana",
+        "state": "RJ",
+        "country_code": "BR",
+        "_parsed": {
+            "thoroughfare": "Rua Figueiredo Magalhães",
+            "house_number": "123",
+            "neighborhood": "Copacabana",
+            "city": null,
+            "state": "RJ",
+            "postal_code": "22041-001",
+            "country_code": "BR",
+            "complement": null
+        }
+    },
+    "matches": [
+        {
+            "i": 0,
+            "j": 1,
+            "score": 1.0
+        },
+        {
+            "i": 0,
+            "j": 3,
+            "score": 0.941
+        },
+        {
+            "i": 0,
+            "j": 5,
+            "score": 0.975
+        },
+        {
+            "i": 0,
+            "j": 6,
+            "score": 0.982
+        },
+        {
+            "i": 0,
+            "j": 7,
+            "score": 0.97
+        },
+        {
+            "i": 0,
+            "j": 9,
+            "score": 1.0
+        },
+        {
+            "i": 0,
+            "j": 11,
+            "score": 0.994
+        },
+        {
+            "i": 0,
+            "j": 12,
+            "score": 0.947
+        },
+        {
+            "i": 0,
+            "j": 13,
+            "score": 0.911
+        },
+        {
+            "i": 0,
+            "j": 14,
+            "score": 0.975
+        },
+        {
+            "i": 0,
+            "j": 15,
+            "score": 0.982
+        },
+        {
+            "i": 0,
+            "j": 16,
+            "score": 0.889
+        },
+        {
+            "i": 0,
+            "j": 18,
+            "score": 0.988
+        },
+        {
+            "i": 1,
+            "j": 3,
+            "score": 0.91
+        },
+        {
+            "i": 1,
+            "j": 5,
+            "score": 0.975
+        },
+        {
+            "i": 1,
+            "j": 6,
+            "score": 0.871
+        },
+        {
+            "i": 1,
+            "j": 7,
+            "score": 0.9
+        },
+        {
+            "i": 1,
+            "j": 8,
+            "score": 0.881
+        },
+        {
+            "i": 1,
+            "j": 9,
+            "score": 0.967
+        },
+        {
+            "i": 1,
+            "j": 11,
+            "score": 0.928
+        },
+        {
+            "i": 1,
+            "j": 14,
+            "score": 0.935
+        },
+        {
+            "i": 1,
+            "j": 15,
+            "score": 0.981
+        },
+        {
+            "i": 1,
+            "j": 16,
+            "score": 1.0
+        },
+        {
+            "i": 1,
+            "j": 17,
+            "score": 0.892
+        },
+        {
+            "i": 1,
+            "j": 18,
+            "score": 0.987
+        },
+        {
+            "i": 2,
+            "j": 7,
+            "score": 0.877
+        },
+        {
+            "i": 2,
+            "j": 8,
+            "score": 0.912
+        },
+        {
+            "i": 2,
+            "j": 10,
+            "score": 0.935
+        },
+        {
+            "i": 2,
+            "j": 13,
+            "score": 0.881
+        },
+        {
+            "i": 2,
+            "j": 15,
+            "score": 0.877
+        },
+        {
+            "i": 2,
+            "j": 16,
+            "score": 0.971
+        },
+        {
+            "i": 2,
+            "j": 18,
+            "score": 0.871
+        },
+        {
+            "i": 3,
+            "j": 5,
+            "score": 0.912
+        },
+        {
+            "i": 3,
+            "j": 7,
+            "score": 0.923
+        },
+        {
+            "i": 3,
+            "j": 9,
+            "score": 0.908
+        },
+        {
+            "i": 3,
+            "j": 10,
+            "score": 0.895
+        },
+        {
+            "i": 3,
+            "j": 11,
+            "score": 1.0
+        },
+        {
+            "i": 3,
+            "j": 12,
+            "score": 0.95
+        },
+        {
+            "i": 3,
+            "j": 13,
+            "score": 0.917
+        },
+        {
+            "i": 3,
+            "j": 14,
+            "score": 0.921
+        },
+        {
+            "i": 3,
+            "j": 15,
+            "score": 0.925
+        },
+        {
+            "i": 3,
+            "j": 16,
+            "score": 0.941
+        },
+        {
+            "i": 3,
+            "j": 17,
+            "score": 0.962
+        },
+        {
+            "i": 3,
+            "j": 18,
+            "score": 0.929
+        },
+        {
+            "i": 5,
+            "j": 6,
+            "score": 0.958
+        },
+        {
+            "i": 5,
+            "j": 7,
+            "score": 0.945
+        },
+        {
+            "i": 5,
+            "j": 9,
+            "score": 0.975
+        },
+        {
+            "i": 5,
+            "j": 11,
+            "score": 0.947
+        },
+        {
+            "i": 5,
+            "j": 12,
+            "score": 0.947
+        },
+        {
+            "i": 5,
+            "j": 14,
+            "score": 0.947
+        },
+        {
+            "i": 5,
+            "j": 15,
+            "score": 0.982
+        },
+        {
+            "i": 5,
+            "j": 18,
+            "score": 0.987
+        },
+        {
+            "i": 6,
+            "j": 7,
+            "score": 0.918
+        },
+        {
+            "i": 6,
+            "j": 9,
+            "score": 0.952
+        },
+        {
+            "i": 6,
+            "j": 11,
+            "score": 0.941
+        },
+        {
+            "i": 6,
+            "j": 12,
+            "score": 0.877
+        },
+        {
+            "i": 6,
+            "j": 13,
+            "score": 0.875
+        },
+        {
+            "i": 6,
+            "j": 14,
+            "score": 0.95
+        },
+        {
+            "i": 6,
+            "j": 15,
+            "score": 0.964
+        },
+        {
+            "i": 6,
+            "j": 16,
+            "score": 0.877
+        },
+        {
+            "i": 6,
+            "j": 18,
+            "score": 0.97
+        },
+        {
+            "i": 7,
+            "j": 9,
+            "score": 0.97
+        },
+        {
+            "i": 7,
+            "j": 11,
+            "score": 0.975
+        },
+        {
+            "i": 7,
+            "j": 12,
+            "score": 0.923
+        },
+        {
+            "i": 7,
+            "j": 13,
+            "score": 0.892
+        },
+        {
+            "i": 7,
+            "j": 14,
+            "score": 0.931
+        },
+        {
+            "i": 7,
+            "j": 15,
+            "score": 0.975
+        },
+        {
+            "i": 7,
+            "j": 18,
+            "score": 0.981
+        },
+        {
+            "i": 8,
+            "j": 10,
+            "score": 0.886
+        },
+        {
+            "i": 8,
+            "j": 16,
+            "score": 0.905
+        },
+        {
+            "i": 8,
+            "j": 17,
+            "score": 0.89
+        },
+        {
+            "i": 9,
+            "j": 11,
+            "score": 0.994
+        },
+        {
+            "i": 9,
+            "j": 12,
+            "score": 0.947
+        },
+        {
+            "i": 9,
+            "j": 13,
+            "score": 0.911
+        },
+        {
+            "i": 9,
+            "j": 14,
+            "score": 0.975
+        },
+        {
+            "i": 9,
+            "j": 15,
+            "score": 0.982
+        },
+        {
+            "i": 9,
+            "j": 17,
+            "score": 0.88
+        },
+        {
+            "i": 9,
+            "j": 18,
+            "score": 0.988
+        },
+        {
+            "i": 10,
+            "j": 13,
+            "score": 0.891
+        },
+        {
+            "i": 10,
+            "j": 16,
+            "score": 0.942
+        },
+        {
+            "i": 10,
+            "j": 17,
+            "score": 0.882
+        },
+        {
+            "i": 11,
+            "j": 12,
+            "score": 0.925
+        },
+        {
+            "i": 11,
+            "j": 13,
+            "score": 0.917
+        },
+        {
+            "i": 11,
+            "j": 14,
+            "score": 0.954
+        },
+        {
+            "i": 11,
+            "j": 15,
+            "score": 0.976
+        },
+        {
+            "i": 11,
+            "j": 16,
+            "score": 0.883
+        },
+        {
+            "i": 11,
+            "j": 18,
+            "score": 0.982
+        },
+        {
+            "i": 12,
+            "j": 14,
+            "score": 0.942
+        },
+        {
+            "i": 12,
+            "j": 15,
+            "score": 0.952
+        },
+        {
+            "i": 12,
+            "j": 18,
+            "score": 0.973
+        },
+        {
+            "i": 13,
+            "j": 14,
+            "score": 0.871
+        },
+        {
+            "i": 13,
+            "j": 15,
+            "score": 0.893
+        },
+        {
+            "i": 13,
+            "j": 16,
+            "score": 0.911
+        },
+        {
+            "i": 13,
+            "j": 17,
+            "score": 0.933
+        },
+        {
+            "i": 13,
+            "j": 18,
+            "score": 0.898
+        },
+        {
+            "i": 14,
+            "j": 15,
+            "score": 0.952
+        },
+        {
+            "i": 14,
+            "j": 18,
+            "score": 0.958
+        },
+        {
+            "i": 15,
+            "j": 16,
+            "score": 0.871
+        },
+        {
+            "i": 15,
+            "j": 18,
+            "score": 0.994
+        },
+        {
+            "i": 16,
+            "j": 17,
+            "score": 1.0
+        },
+        {
+            "i": 16,
+            "j": 18,
+            "score": 0.877
+        }
+    ],
+    "harmonization": {
+        "codes": [],
+        "units": []
+    },
+    "enrichment": [],
+    "issues": [],
+    "actions": [],
+    "pii_masks": {},
+    "audit_log": [],
+    "confidence": 0.9
+}
+
+```
 
 ---
 
