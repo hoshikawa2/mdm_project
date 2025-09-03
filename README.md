@@ -1528,7 +1528,7 @@ curl -X POST http://localhost:8080/mdm/process   -H "Content-Type: application/j
 ✅ At this point, the project should be fully deployed, running on **OCI A10 GPUs**, and producing clean, standardized, and enriched master data records.  
 
 
-## Conclusion
+## 7. Conclusion
 
 This project is divided into two complementary layers that, together, provide a modern and powerful approach to Master Data Management (MDM).
 
