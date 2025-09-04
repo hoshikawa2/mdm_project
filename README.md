@@ -179,6 +179,10 @@ You can tell, in natural language, how you need to process each attribute (trans
 
 This combination of **Python** code and the **Prompt** drives the process to be more accurate and returns the desired result.
 
+>**Note:** In this project, there is the **Customer** case, similar to **Address** source-code and the prompt.
+
+If you want to know more about Agents, LLM and prompts. see this article [Develop a Simple AI Agent Tool using Oracle Cloud Infrastructure Generative AI and REST APIs](https://docs.oracle.com/en/learn/oci-agent-ai/)
+
 ---
 
 ## 5. Deploy the Application
@@ -1587,6 +1591,7 @@ This hybrid approach represents a modern evolution of MDM, where AI amplifies hu
 - [Oracle Cloud GPU Instances](https://www.oracle.com/cloud/compute/gpu/)
 - [Using NVidia GPU with Oracle Cloud Infrastructure](https://docs.oracle.com/pt-br/iaas/Content/Compute/References/ngcimage.htm)
 - [The Future of Middleware in the Age of Artificial Intelligence - Original article in Portuguese](https://www.linkedin.com/pulse/o-futuro-do-middleware-na-era-da-intelig%C3%AAncia-ivan-gardino-mba-to9uf/)
+- [Develop a Simple AI Agent Tool using Oracle Cloud Infrastructure Generative AI and REST APIs](https://docs.oracle.com/en/learn/oci-agent-ai/)
 
 ## Acknowledgments
 
