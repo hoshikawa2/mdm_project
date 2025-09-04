@@ -167,6 +167,18 @@ You have domains, operations and payloads for Input and Output. You can customiz
 
 ![img_1.png](images/img_1.png)
 
+#### address_service.py
+
+The [address_service.py](./files/services/address_service.py) shows how to use the LLM and a prompt to conduct transformations for the entity address.
+
+![img.png](images/img_2.png)
+
+You can tell, in natural language, how you need to process each attribute (transform, format, direct to an external API Service).
+
+![img_1.png](images/img_3.png)
+
+This combination of **Python** code and the **Prompt** drives the process to be more accurate and returns the desired result.
+
 ---
 
 ## 5. Deploy the Application
